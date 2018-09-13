@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.uplinfo.book.ubdata.persistence.BookValumeMapper">
+
+  <resultMap id="bookValumeResult" type="com.uplinfo.book.ubdata.domain.BookValume">
+  	<id property="id" column="id" />
+  	<result property="bookid" column="bookid" />
+  	<result property="name" column="name" />
+  	<result property="orderline" column="orderline" />
+  </resultMap>
+  
+  <sql id="bookvalumeColumns"> id, bookid, name, orderline </sql>
+  
+  <select id="getBookValumeById" parameterType="string" resultMap="bookValumeResult">
+    SELECT <include refid="bookvalumeColumns"/>
+    FROM bookvalume
+    WHERE id = #{id}
+  </select>
+
+  <select id="getBookValumeList" resultMap="bookValumeResult" parameterType="Integer">
+    SELECT <include refid="bookvalumeColumns"/>
+    FROM bookvalume
+  </select>
+  
+  <select id="getBookValumeCount" resultType="int" parameterType="java.util.HashMap">
+    SELECT count(*) FROM bookvalume
+    <where>
+     <if test="s != null and s !='' ">
+     			bookid like '%${s}%'    			
+     			or name like '%${s}%'
+     			or orderline like '%${s}%'
+      </if> 
+     </where>
+  </select>
+  
+  <select id="getBookValumeListByPage" resultMap="bookValumeResult" parameterType="java.util.HashMap">
+    SELECT id, bookid, name, orderline
+    FROM bookvalume
+	<where>
+     <if test="s != null and s !='' ">
+     			bookid like '%${s}%'    			
+     			or name like '%${s}%'
+     			or orderline like '%${s}%'
+      </if> 
+     </where>
+    Limit #{start}, #{length}
+  </select>
+  
+ 
+  <update id="updateBookValume" parameterType="BookValume">
+    UPDATE bookvalume 
+    SET bookid=#{bookid}, name=#{name}, orderline=#{orderline} 
+    WHERE id=#{id}
+  </update>
+
+  <insert id="insertBookValume" parameterType="BookValume" useGeneratedKeys="true" keyProperty="id">
+    INSERT INTO bookvalume 
+    (bookid, name, orderline) 
+    VALUES 
+    (#{bookid}, #{name}, #{orderline})
+  </insert>
+
+  <delete id="deleteBookValumeById" parameterType="int">
+  	DELETE FROM bookvalume WHERE id=#{id}
+  </delete>
+    
+  <select id="getIdByPosition" resultType="int" parameterType="java.util.HashMap">
+    SELECT BookValumeId 
+    FROM bookvalume
+    <if test="p != -1 ">
+    WHERE orderline &gt; #{orderline}
+    order by orderline asc
+    </if> 
+    <if test="p == -1 ">
+    WHERE orderline &lt; #{orderline}
+    order by orderline desc
+    </if> 
+    Limit 0,1
+  </select>
+ 
+
+</mapper>

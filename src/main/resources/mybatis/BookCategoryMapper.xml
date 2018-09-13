@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.uplinfo.book.ubdata.persistence.BookCategoryMapper">
+
+  <resultMap id="bookCategoryResult" type="com.uplinfo.book.ubdata.domain.BookCategory">
+  	<id property="id" column="id" />
+  	<result property="name" column="name" />
+  	<result property="orderline" column="orderline" />
+  </resultMap>
+  
+  <sql id="bookcategoryColumns"> id, name, orderline </sql>
+  
+  <select id="getBookCategoryById" parameterType="string" resultMap="bookCategoryResult">
+    SELECT <include refid="bookcategoryColumns"/>
+    FROM bookcategory
+    WHERE id = #{id}
+  </select>
+
+  <select id="getBookCategoryList" resultMap="bookCategoryResult" parameterType="String">
+    SELECT <include refid="bookcategoryColumns"/>
+    FROM bookcategory
+  </select>
+  
+  <select id="getBookCategoryCount" resultType="int" parameterType="java.util.HashMap">
+    SELECT count(*) FROM bookcategory
+    <where>
+     <if test="s != null and s !='' ">
+     			name like '%${s}%'    			
+     			or orderline like '%${s}%'
+      </if> 
+     </where>
+  </select>
+  
+  <select id="getBookCategoryListByPage" resultMap="bookCategoryResult" parameterType="java.util.HashMap">
+    SELECT id, name, orderline
+    FROM bookcategory
+	<where>
+     <if test="s != null and s !='' ">
+     			name like '%${s}%'    			
+     			or orderline like '%${s}%'
+      </if> 
+     </where>
+    Limit #{start}, #{length}
+  </select>
+  
+ 
+  <update id="updateBookCategory" parameterType="BookCategory">
+    UPDATE bookcategory 
+    SET name=#{name}, orderline=#{orderline} 
+    WHERE id=#{id}
+  </update>
+
+  <insert id="insertBookCategory" parameterType="BookCategory" useGeneratedKeys="true" keyProperty="id">
+    INSERT INTO bookcategory 
+    (name, orderline) 
+    VALUES 
+    (#{name}, #{orderline})
+  </insert>
+
+  <delete id="deleteBookCategoryById" parameterType="int">
+  	DELETE FROM bookcategory WHERE id=#{id}
+  </delete>
+    
+  <select id="getIdByPosition" resultType="int" parameterType="java.util.HashMap">
+    SELECT BookCategoryId 
+    FROM bookcategory
+    <if test="p != -1 ">
+    WHERE orderline &gt; #{orderline}
+    order by orderline asc
+    </if> 
+    <if test="p == -1 ">
+    WHERE orderline &lt; #{orderline}
+    order by orderline desc
+    </if> 
+    Limit 0,1
+  </select>
+ 
+
+</mapper>

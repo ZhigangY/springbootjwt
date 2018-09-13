@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.uplinfo.book.ubdata.persistence.BookContentMapper">
+
+  <resultMap id="bookContentResult" type="com.uplinfo.book.ubdata.domain.BookContent">
+  	<id property="id" column="id" />
+  	<result property="bookid" column="bookid" />
+  	<result property="volumeid" column="volumeid" />
+  	<result property="title" column="title" />
+  	<result property="noteText" column="notetext" />
+  	<result property="orderline" column="orderline" />
+  </resultMap>
+  
+  <sql id="bookcontentColumns"> id, bookid, volumeid, title, notetext, orderline </sql>
+  
+  <select id="getBookContentById" parameterType="string" resultMap="bookContentResult">
+    SELECT <include refid="bookcontentColumns"/>
+    FROM bookcontent
+    WHERE id = #{id}
+  </select>
+
+  <select id="getBookContentList" resultMap="bookContentResult" parameterType="Integer">
+    SELECT <include refid="bookcontentColumns"/>
+    FROM bookcontent
+  </select>
+  
+  <select id="getBookContentCount" resultType="int" parameterType="java.util.HashMap">
+    SELECT count(*) FROM bookcontent
+    where bookid = #{bookId}
+  </select>
+  
+  <select id="getBookContentListByPage" resultMap="bookContentResult" parameterType="java.util.HashMap">
+    SELECT id, bookid, volumeid, title, orderline
+    FROM bookcontent
+ 	where bookid = #{bookId}
+ 	order by orderline
+    Limit #{start}, #{length}
+  </select>
+  
+ 
+  <update id="updateBookContent" parameterType="BookContent">
+    UPDATE bookcontent 
+    SET bookid=#{bookid}, volumeid=#{volumeid}, title=#{title}, notetext=#{noteText}, orderline=#{orderline} 
+    WHERE id=#{id}
+  </update>
+
+  <insert id="insertBookContent" parameterType="BookContent" useGeneratedKeys="true" keyProperty="id">
+    INSERT INTO bookcontent 
+    (bookid, volumeid, title, notetext, orderline) 
+    VALUES 
+    (#{bookid}, #{volumeid}, #{title}, #{noteText}, #{orderline})
+  </insert>
+
+  <delete id="deleteBookContentById" parameterType="int">
+  	DELETE FROM bookcontent WHERE id=#{id}
+  </delete>
+    
+ 
+
+</mapper>

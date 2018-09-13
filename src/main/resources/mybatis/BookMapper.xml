@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.uplinfo.book.ubdata.persistence.BookMapper">
+
+  <resultMap id="bookResult" type="com.uplinfo.book.ubdata.domain.Book">
+  	<id property="id" column="id" />
+  	<result property="bookName" column="bookname" />
+  	<result property="category" column="category" />
+  	<result property="author" column="author" />
+  	<result property="summary" column="summary" />
+  	<result property="bookCover" column="bookcover" />
+  	<result property="orderline" column="orderline" />
+  	<result property="bookapi" column="bookapi" />
+  </resultMap>
+  
+  <sql id="bookColumns"> id, bookname, category, author, summary, bookcover, orderline, bookapi </sql>
+  
+  <select id="getBookById" parameterType="string" resultMap="bookResult">
+    SELECT <include refid="bookColumns"/>
+    FROM book
+    WHERE id = #{id}
+  </select>
+
+  <select id="getBookList" resultMap="bookResult" parameterType="String">
+    SELECT <include refid="bookColumns"/>
+    FROM book
+  </select>
+  
+  <select id="getBookCount" resultType="int" parameterType="java.util.HashMap">
+    SELECT count(*) FROM book
+    <where>
+     <if test="s != null and s !='' ">
+     			bookname like '%${s}%'    			
+     			or category like '%${s}%'
+     			or author like '%${s}%'
+     			or summary like '%${s}%'
+     			or bookcover like '%${s}%'
+     			or orderline like '%${s}%'
+     			or bookapi like '%${s}%'
+      </if> 
+     </where>
+  </select>
+  
+  <select id="getBookListByPage" resultMap="bookResult" parameterType="java.util.HashMap">
+    SELECT id, bookname, category, author, summary, bookcover, orderline, bookapi
+    FROM book
+	<where>
+     <if test="s != null and s !='' ">
+     			bookname like '%${s}%'    			
+     			or category like '%${s}%'
+     			or author like '%${s}%'
+     			or summary like '%${s}%'
+     			or bookcover like '%${s}%'
+     			or orderline like '%${s}%'
+     			or bookapi like '%${s}%'
+      </if> 
+     </where>
+    Limit #{start}, #{length}
+  </select>
+  
+ 
+  <update id="updateBook" parameterType="Book">
+    UPDATE book 
+    SET bookname=#{bookName}, category=#{category}, author=#{author}, summary=#{summary}, bookcover=#{bookCover}, orderline=#{orderline}, bookapi=#{bookapi} 
+    WHERE id=#{id}
+  </update>
+
+  <insert id="insertBook" parameterType="Book" useGeneratedKeys="true" keyProperty="id">
+    INSERT INTO book 
+    (bookname, category, author, summary, bookcover, orderline, bookapi) 
+    VALUES 
+    (#{bookName}, #{category}, #{author}, #{summary}, #{bookCover}, #{orderline}, #{bookapi})
+  </insert>
+
+  <delete id="deleteBookById" parameterType="int">
+  	DELETE FROM book WHERE id=#{id}
+  </delete>
+    
+  <select id="getIdByPosition" resultType="int" parameterType="java.util.HashMap">
+    SELECT BookId 
+    FROM book
+    <if test="p != -1 ">
+    WHERE orderline &gt; #{orderline}
+    order by orderline asc
+    </if> 
+    <if test="p == -1 ">
+    WHERE orderline &lt; #{orderline}
+    order by orderline desc
+    </if> 
+    Limit 0,1
+  </select>
+ 
+
+</mapper>

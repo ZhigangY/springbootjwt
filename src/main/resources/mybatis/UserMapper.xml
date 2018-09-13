@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.uplinfo.book.ubdata.persistence.UserMapper">
+  <cache eviction="LRU"  flushInterval="60000"  size="1024"   readOnly="true"/>
+  <resultMap id="userResult" type="com.uplinfo.book.ubdata.domain.User">
+  	<id property="userId" column="userid" />
+  	<result property="username" column="username" />
+  	<result property="password" column="password" />
+  	<result property="available" column="available" />
+  	<result property="cellPhone" column="cellphone" />
+  	<result property="endDate" column="enddate" />
+  	<result property="startDate" column="startdate" />
+  	<result property="displayName" column="displayname" />
+  	<result property="userAvatar" column="userAvatar" />
+  	<result property="style" column="style" />
+  </resultMap>
+
+  <select id="getUserByUserId" parameterType="int" resultMap="userResult">
+    SELECT userid, username, password, available, cellphone, enddate, startdate, displayname,
+    userAvatar,style
+    FROM user
+    WHERE userid = #{userId}
+  </select>
+  
+  
+  <select id="getUserByUsername" parameterType="string" resultMap="userResult">
+    SELECT userid, username, password, available, cellphone, enddate, startdate, displayname,
+    userAvatar,style
+    FROM user
+    WHERE username = #{username}
+  </select>
+ 
+  <update id="updateUserAvatar" parameterType="User">
+    UPDATE user 
+    SET userAvatar=#{userAvatar} 
+    WHERE userid=#{userId}
+  </update>
+  
+  <update id="updateUserProfile" parameterType="User">
+    UPDATE user 
+    SET password=#{password}, cellphone=#{cellPhone}, displayname=#{displayName}, style=#{style}
+    WHERE userid=#{userId}
+  </update>
+  
+  <update id="updateUser" parameterType="User">
+    UPDATE user 
+    SET username=#{username}, password=#{password}, available=#{available}, cellphone=#{cellPhone}, wechat=#{weChat}, enddate=#{endDate}, startdate=#{startDate}, displayname=#{displayName} 
+    WHERE userid=#{userId}
+  </update>
+  
+  
+  <delete id="deleteUser" parameterType="int">
+    DELETE FROM user WHERE userid=#{userId}
+  </delete>
+  
+  <update id="updateUserPassword" parameterType="User">
+    UPDATE user SET  password=#{password}
+    WHERE userid=#{userId}
+  </update>
+  
+  <insert id="insertUser" parameterType="User" useGeneratedKeys="true" keyProperty="userId">
+    INSERT INTO user 
+    (username, password, available, cellphone, startdate, enddate, displayname) 
+    VALUES 
+    (#{username}, #{password}, #{available}, #{cellPhone}, #{startDate}, #{endDate}, #{displayName})
+  </insert>
+  
+</mapper>
